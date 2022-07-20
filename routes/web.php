@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +16,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/clear-cache', function(){
+	Artisan::call('view:clear');
+	Artisan::call('config:clear');
+	Artisan::call('cache:clear');
+	Artisan::call('config:cache');
 });
+
+// Authentication Routes
+Route::get('/', [LoginController::class, 'showLogin'])->name('login.show');
+Route::get('/auth/github/redirect', [LoginController::class, 'handleRedirect'])->name('login.redirect');
+Route::get('/auth/github/callback', [LoginController::class, 'handleLogin'])->name('login.handle');
+Route::post('/logout', [LoginController::class, 'handleLogout'])->name('logout.handle');
+
+Route::get('/home', [UserController::class, 'index'])->name('home');
