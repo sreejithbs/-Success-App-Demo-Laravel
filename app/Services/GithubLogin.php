@@ -11,7 +11,7 @@ use App\Services\GithubUser;
 class GithubLogin
 {
     // GitHub API Oauth Base URL
-    const API_BASE_URL = 'https://github.com/login/oauth/';
+    const OAUTH_API_BASE_URL = 'https://github.com/login/oauth/';
 
     private $githubUser;
 
@@ -32,7 +32,7 @@ class GithubLogin
      */
     public function redirect()
     {
-        return self::API_BASE_URL . 'authorize?' . http_build_query([
+        return self::OAUTH_API_BASE_URL . 'authorize?' . http_build_query([
             'client_id' => config('services.github.client_id'),
             'redirect_uri' => config('services.github.redirect_uri'),
             'scope' => config('services.github.scopes'),
@@ -48,7 +48,7 @@ class GithubLogin
     public function authenticate($code)
     {
         $access_token = false;
-        $response = Http::acceptJson()->post(self::API_BASE_URL . 'access_token', [
+        $response = Http::acceptJson()->post(self::OAUTH_API_BASE_URL . 'access_token', [
             'client_id' => config('services.github.client_id'),
             'client_secret' => config('services.github.client_secret'),
             'code' => $code,

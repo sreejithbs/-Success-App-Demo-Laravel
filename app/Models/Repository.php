@@ -12,11 +12,11 @@ class Repository extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'repository_id',
-        'repository_name',
-        'repository_fullname',
-        'repository_private',
-        'repository_url',
+        'uid',
+        'name',
+        'full_name',
+        'visibility',
+        'reference_url',
     ];
 
     /**
@@ -24,5 +24,12 @@ class Repository extends Model
      */
     public function user(){
     	return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relation - repository has many issues
+     */
+    public function issues(){
+        return $this->hasMany(Issue::class);
     }
 }

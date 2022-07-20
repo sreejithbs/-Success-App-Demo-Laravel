@@ -1,5 +1,5 @@
 @extends('backend._partials.master')
-@section('page_title', 'Admin Dashboard')
+@section('page_title', 'Repository List')
 
 @section('content')
 <div class="bg-light p-5 rounded">
@@ -24,27 +24,25 @@
 			@forelse($repositories as $repository)
 				<tr>
 					<td>
-						{{ $repository->repository_id }}
+						{{ $repository->uid }}
 					</td>
 					<td>
-						{{ $repository->repository_name }}
+						{{ $repository->name }}
 					</td>
 					<td>
-						{{ $repository->repository_private ? "Private" : "Public" }}
+						{{ ucfirst($repository->visibility) }}
 					</td>
 					<td>
-						<a href="{{ $repository->repository_url }}" target="_blank" class="btn btn-sm btn-primary"> Visit </a>
+						<a href="{{ $repository->reference_url }}" target="_blank" class="btn btn-sm btn-primary"> Visit Github </a>
 					</td>
 					<td>
-						<a href="" class="btn btn-sm btn-primary"> View Issues </a>
+						<a href="{{ route('issue.list', $repository->uid) }}" class="btn btn-sm btn-primary"> View Issues </a>
 					</td>
 				</tr>
 			@empty
-				<div class="row mt-2">
-					<div class="form-group col-md-2">
-						No Repositories found
-					</div>
-				</div>
+				<tr>
+					<td colspan="5"> No Repositories found </td>
+				</tr>
 			@endforelse
 		</tbody>
 	</table>

@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('repositories', function (Blueprint $table) {
+        Schema::create('issues', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('repository_id')->constrained('repositories')->cascadeOnDelete();
             $table->bigInteger('uid')->unique();
-            $table->text('name');
-            $table->longText('full_name');
-            $table->enum('visibility', ['public', 'private']);
-            $table->boolean('issues_imported')->default(0);
+            $table->text('title');
+            $table->longText('description');
+            $table->enum('status', ['open', 'closed']);
+            $table->boolean('is_synced')->default(0);
             $table->longText('reference_url');
             $table->timestamps();
         });
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('repositories');
+        Schema::dropIfExists('issues');
     }
 };

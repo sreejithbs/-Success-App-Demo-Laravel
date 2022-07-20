@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\IssueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,3 +31,5 @@ Route::get('/auth/github/callback', [LoginController::class, 'handleLogin'])->na
 Route::post('/logout', [LoginController::class, 'handleLogout'])->name('logout.handle');
 
 Route::get('/home', [UserController::class, 'index'])->name('home');
+
+Route::get('/{repository_uid}/issues/list', [IssueController::class, 'index'])->name('issue.list');
