@@ -20,11 +20,9 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * Relation - users has many repository
      */
-    protected $hidden = [
-        // 
-    ];
+    public function repositories(){
+        return $this->hasMany(Repository::class);
+    }
 }

@@ -23,7 +23,7 @@ abstract class ApiClient
     {
         $response = Http::withHeaders([
             'Authorization' => 'token ' . auth()->user()->github_token,
-        ])->get(self::API_BASE_URL . rawurlencode($path), $parameters);
+        ])->get(self::API_BASE_URL . $path, $parameters);
 
         $result = array();
         if( $response->successful() ){
