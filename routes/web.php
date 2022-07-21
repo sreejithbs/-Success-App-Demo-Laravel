@@ -17,7 +17,7 @@ use App\Http\Controllers\IssueController;
 |
 */
 
-Route::get('/clear-cache', function(){
+Route::get('/clear-cache', function () {
 	Artisan::call('view:clear');
 	Artisan::call('config:clear');
 	Artisan::call('cache:clear');
@@ -25,12 +25,22 @@ Route::get('/clear-cache', function(){
 });
 
 // Authentication Routes
-Route::get('/', [LoginController::class, 'showLogin'])->name('login.show');
-Route::get('/auth/github/redirect', [LoginController::class, 'handleRedirect'])->name('login.redirect');
-Route::get('/auth/github/callback', [LoginController::class, 'handleLogin'])->name('login.handle');
-Route::post('/logout', [LoginController::class, 'handleLogout'])->name('logout.handle');
+Route::controller(LoginController::class)->group(function () {
+	Route::get('/', 'showLogin')->name('login.show');
+	Route::get('/auth/github/redirect', 'handleRedirect')->name('login.redirect');
+	Route::get('/auth/github/callback', 'handleLogin')->name('login.handle');
+	Route::post('/logout', 'handleLogout')->name('logout.handle');
+});
 
 Route::get('/home', [UserController::class, 'index'])->name('home');
 
-Route::get('/{repository_uid}/issues/list', [IssueController::class, 'index'])->name('issue.list');
-Route::post('/issue/store', [IssueController::class, 'store'])->name('issue.store');
+Route::controller(IssueController::class)->name('issue.')->group(function () {
+	Route::get('/{repository_uid}/issues/list', 'index')->name('list');
+	
+	Route::prefix('issue')->group(function () {
+		Route::post('/store', 'store')->name('store');
+		Route::get('/edit/{issue_uid}', 'edit')->name('edit');
+		Route::post('/update/{issue_uid}', 'update')->name('update');
+		Route::delete('/delete/{issue_uid}', 'delete')->name('delete');
+	});
+});

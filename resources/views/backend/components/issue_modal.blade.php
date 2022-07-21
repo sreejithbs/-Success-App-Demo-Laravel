@@ -18,6 +18,7 @@
 						<label for="issue-description" class="col-form-label">Issue Description</label>
 						<textarea class="form-control" id="issue-description"></textarea>
 					</div>
+					<input type="hidden" name="issue_uid" id="issue_uid">
 				</form>
 			</div>
 			<div class="modal-footer">

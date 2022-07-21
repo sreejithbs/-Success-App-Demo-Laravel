@@ -34,7 +34,7 @@ abstract class ApiClient
         return $result;
     }
 
-     /**
+    /**
      * POST API method
      *
      * @param   string  $path
@@ -49,7 +49,29 @@ abstract class ApiClient
         ])->post(self::API_BASE_URL . $path, $parameters);
 
         $result = array();
-        if( $response->successful() ){
+        if ($response->successful()) {
+            $result = json_decode($response->body(), true);
+        }
+
+        return $result;
+    }
+
+    /**
+     * PATCH API method
+     *
+     * @param   string  $path
+     * @param   array   $parameters
+     * @return  array
+     */
+    protected function patchApi($path, array $parameters = array())
+    {
+        $response = Http::withHeaders([
+            'Accept' => 'application/vnd.github+json',
+            'Authorization' => 'token ' . auth()->user()->github_token,
+        ])->patch(self::API_BASE_URL . $path, $parameters);
+
+        $result = array();
+        if ($response->successful()) {
             $result = json_decode($response->body(), true);
         }
 

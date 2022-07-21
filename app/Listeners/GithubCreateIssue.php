@@ -31,11 +31,11 @@ class GithubCreateIssue implements ShouldQueue
     public function handle(IssueWasCreated $event)
     {
         $issue = $event->issue;
-        
         $result = $this->githubUser->createIssue($issue);
 
         if (count($result) > 0 && array_key_exists('id', $result)) {
             $issue->uid = $result['id'];
+            $issue->uid = $result['number'];
             $issue->reference_url = $result['html_url'];
             $issue->save();
         }

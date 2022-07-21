@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('repository_id')->constrained('repositories')->cascadeOnDelete();
             $table->bigInteger('uid')->unique()->nullable();
+            $table->integer('number')->nullable();
             $table->text('title');
             $table->longText('description');
             $table->enum('status', ['open', 'closed'])->default('open');

@@ -18,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
         IssueWasCreated::class => [
             GithubCreateIssue::class,
         ],
+        IssueWasUpdated::class => [
+            GithubUpdateIssue::class,
+        ],
     ];
 
     /**

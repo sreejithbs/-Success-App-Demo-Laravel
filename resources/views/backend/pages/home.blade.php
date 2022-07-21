@@ -33,7 +33,7 @@
 						{{ ucfirst($repository->visibility) }}
 					</td>
 					<td>
-						<a href="{{ $repository->reference_url }}" target="_blank" class="btn btn-sm btn-primary"> Visit Github </a>
+						<a href="{{ $repository->reference_url }}" target="_blank" class="btn btn-sm btn-primary"> View in Github </a>
 					</td>
 					<td>
 						<a href="{{ route('issue.list', $repository->uid) }}" class="btn btn-sm btn-primary"> View Issues </a>

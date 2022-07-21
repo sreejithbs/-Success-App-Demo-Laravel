@@ -13,6 +13,7 @@ class Issue extends Model
      */
     protected $fillable = [
         'uid',
+        'number',
         'title',
         'description',
         'status',

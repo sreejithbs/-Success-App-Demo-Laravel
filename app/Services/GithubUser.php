@@ -89,6 +89,7 @@ class GithubUser extends ApiClient
         foreach($issues as $issue){
             $repository->issues()->create([
                 'uid' => $issue['id'],
+                'number' => $issue['number'],
                 'title' => $issue['title'],
                 'description' => $issue['body'],
                 'status' => $issue['state'],
@@ -113,4 +114,19 @@ class GithubUser extends ApiClient
             'body' => $issue->description
         ]);
     }
+
+    /**
+     * Create new issues within a repository
+     * 
+     * @param  \App\Models\Issue  $repository
+     * @return  array
+     */
+    public function updateIssue(Issue $issue)
+    {
+        return $this->patchApi('/repos/' .$issue->repository->full_name. '/issues/' . $issue->number, [
+            'title' => $issue->title,
+            'body' => $issue->description
+        ]);
+    }
+
 }

@@ -14,8 +14,7 @@
 			font-size: 3.5rem;
 		}
 	}
-	.error-span{
+	.error-span {
 		display: none;
 	}
-
 </style>

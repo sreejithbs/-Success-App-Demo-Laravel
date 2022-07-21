@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\IssueRequest;
 use App\Events\IssueWasCreated;
+use App\Events\IssueWasUpdated;
 use App\Services\GithubUser;
 use App\Models\Issue;
 use App\Models\Repository;
@@ -34,16 +36,14 @@ class IssueController extends Controller
             $q->orderBy('uid', 'desc');
         }])->where('uid', $repository_uid)->firstOrFail();
 
-        if($repository){
-
-            // Import the user's repository issues manually for the first time
-            if(! $repository->issues_imported && $this->githubUser->fetchIssues($repository) ){
-                $repository->issues_imported = true;
-                $repository->save();
-            }
-            
-            return view('backend.pages.issues.list', with(['repository' => $repository]));
+        // Import the user's repository issues manually for the first time
+        if(! $repository->issues_imported && $this->githubUser->fetchIssues($repository) ){
+            $repository->issues_imported = true;
+            $repository->save();
+            $repository->refresh();
         }
+        
+        return view('backend.pages.issues.list', with(['repository' => $repository]));
     }
 
     /**
@@ -66,34 +66,29 @@ class IssueController extends Controller
     {
         if($request->ajax()){
             $repository = Repository::where('uid', $request->input('repository-uid'))->firstOrFail();
-            if ($repository) {
 
-                $issue = new Issue;
-                $issue->title = $request->input('issue-title');
-                $issue->description = $request->input('issue-description');
-                $issue->status = 'open';
-                $repository->issues()->save($issue);
-                $repository->refresh();
+            $issue = new Issue;
+            $issue->title = $request->input('issue-title');
+            $issue->description = $request->input('issue-description');
+            $issue->status = 'open';
+            $repository->issues()->save($issue);
+            $repository->refresh();
 
-                // Dispatch Event
-                IssueWasCreated::dispatch($issue);
+            // Dispatch Event
+            IssueWasCreated::dispatch($issue);
 
-                $response = array('status' => true, 'message' => 'Issue has been recorded successfully');
-                return response()->json($response);
-            }
+            $response = array('status' => true, 'message' => 'Issue has been recorded successfully');
+            return response()->json($response);
         }
-
-        $response = array('status' => false, 'message' => 'Oops! Something went wrong');
-        return response()->json($response);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Issue  $issue
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Issue $issue)
+    public function show($id)
     {
         //
     }
@@ -101,34 +96,51 @@ class IssueController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Issue  $issue
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function edit(Issue $issue)
+    public function edit(Request $request, $issue_uid)
     {
-        //
+        if($request->ajax()){
+            $issue = Issue::where('uid', $issue_uid)->firstOrFail();
+            
+            $response = array('status' => true, 'issue' => $issue);
+            return response()->json($response);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateIssueRequest  $request
-     * @param  \App\Models\Issue  $issue
+     * @param  \App\Http\Requests\IssueRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateIssueRequest $request, Issue $issue)
+    public function update(IssueRequest $request, $issue_uid)
     {
-        //
+        if($request->ajax()){
+            $issue = Issue::where('uid', $issue_uid)->firstOrFail();
+            $issue->title = $request->input('issue-title');
+            $issue->description = $request->input('issue-description');
+            $issue->save();
+
+            // Dispatch Event
+            IssueWasUpdated::dispatch($issue);
+
+            $response = array('status' => true, 'message' => 'Issue has been updated successfully');
+            return response()->json($response);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Issue  $issue
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Issue $issue)
+    public function delete($issue_uid)
     {
-        //
+        $issue = Issue::where('uid', $issue_uid)->firstOrFail();
+        $issue->delete();
+        
+        return back()->with('success', "Issue has been deleted successfully");
     }
 }
