@@ -62,6 +62,6 @@ class GithubLogin
             }
         }
 
-        return $this->githubUser->createOrUpdateUser($access_token);
+        return $this->githubUser->fetchUser($access_token);
     }
 }

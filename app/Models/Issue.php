@@ -17,6 +17,7 @@ class Issue extends Model
         'description',
         'status',
         'reference_url',
+        'is_synced',
     ];
     
     /**

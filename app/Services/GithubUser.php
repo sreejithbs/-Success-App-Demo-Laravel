@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 
 use App\Models\User;
 use App\Models\Repository;
+use App\Models\Issue;
 
 /**
  * Github User Access
@@ -16,12 +17,12 @@ use App\Models\Repository;
 class GithubUser extends ApiClient
 {
     /**
-     * Create or Update User
+     * Retrieve User details
      *
      * @param   string  $access_token
      * @return  boolean
      */
-    public function createOrUpdateUser($access_token)
+    public function fetchUser($access_token)
     {
         if( ! $access_token ){
             return false;
@@ -45,7 +46,7 @@ class GithubUser extends ApiClient
 
             Auth::login($user);
 
-            // Import the user's repositories ONCE
+            // Import the user's repositories manually for the first time
             $this->fetchRepositories();
 
             return true;
@@ -92,7 +93,24 @@ class GithubUser extends ApiClient
                 'description' => $issue['body'],
                 'status' => $issue['state'],
                 'reference_url' => $issue['html_url'],
+                'is_synced' => true,
             ]);
         }
+
+        return true;
+    }
+
+    /**
+     * Create new issues within a repository
+     * 
+     * @param  \App\Models\Issue  $repository
+     * @return  array
+     */
+    public function createIssue(Issue $issue)
+    {
+        return $this->postApi('/repos/' .$issue->repository->full_name. '/issues', [
+            'title' => $issue->title,
+            'body' => $issue->description
+        ]);
     }
 }

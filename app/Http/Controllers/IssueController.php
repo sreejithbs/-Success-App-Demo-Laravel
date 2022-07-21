@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreIssueRequest;
-use App\Http\Requests\UpdateIssueRequest;
+use App\Http\Requests\IssueRequest;
+use App\Events\IssueWasCreated;
 use App\Services\GithubUser;
 use App\Models\Issue;
 use App\Models\Repository;
@@ -30,19 +30,19 @@ class IssueController extends Controller
      */
     public function index($repository_uid)
     {
-        $repository = Repository::where('uid', $repository_uid)->firstOrFail();
+        $repository = Repository::with(['issues' => function ($q) {
+            $q->orderBy('uid', 'desc');
+        }])->where('uid', $repository_uid)->firstOrFail();
+
         if($repository){
 
-            // Import the user's repository issues manually ONCE for the first time
-            if(! $repository->issues_imported){
-                $this->githubUser->fetchIssues($repository);
+            // Import the user's repository issues manually for the first time
+            if(! $repository->issues_imported && $this->githubUser->fetchIssues($repository) ){
                 $repository->issues_imported = true;
                 $repository->save();
             }
             
-            $issues = $repository->issues;
-
-            return view('backend.pages.issues.list', with(['issues' => $issues, 'repository' => $repository]));
+            return view('backend.pages.issues.list', with(['repository' => $repository]));
         }
     }
 
@@ -53,18 +53,38 @@ class IssueController extends Controller
      */
     public function create()
     {
-        //
+        // 
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreIssueRequest  $request
+     * @param  \App\Http\Requests\IssueRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreIssueRequest $request)
+    public function store(IssueRequest $request)
     {
-        //
+        if($request->ajax()){
+            $repository = Repository::where('uid', $request->input('repository-uid'))->firstOrFail();
+            if ($repository) {
+
+                $issue = new Issue;
+                $issue->title = $request->input('issue-title');
+                $issue->description = $request->input('issue-description');
+                $issue->status = 'open';
+                $repository->issues()->save($issue);
+                $repository->refresh();
+
+                // Dispatch Event
+                IssueWasCreated::dispatch($issue);
+
+                $response = array('status' => true, 'message' => 'Issue has been recorded successfully');
+                return response()->json($response);
+            }
+        }
+
+        $response = array('status' => false, 'message' => 'Oops! Something went wrong');
+        return response()->json($response);
     }
 
     /**

@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('issues', function (Blueprint $table) {
             $table->id();
             $table->foreignId('repository_id')->constrained('repositories')->cascadeOnDelete();
-            $table->bigInteger('uid')->unique();
+            $table->bigInteger('uid')->unique()->nullable();
             $table->text('title');
             $table->longText('description');
-            $table->enum('status', ['open', 'closed']);
+            $table->enum('status', ['open', 'closed'])->default('open');
             $table->boolean('is_synced')->default(0);
-            $table->longText('reference_url');
+            $table->longText('reference_url')->nullable();
             $table->timestamps();
         });
     }

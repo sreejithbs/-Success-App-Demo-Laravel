@@ -33,3 +33,4 @@ Route::post('/logout', [LoginController::class, 'handleLogout'])->name('logout.h
 Route::get('/home', [UserController::class, 'index'])->name('home');
 
 Route::get('/{repository_uid}/issues/list', [IssueController::class, 'index'])->name('issue.list');
+Route::post('/issue/store', [IssueController::class, 'store'])->name('issue.store');

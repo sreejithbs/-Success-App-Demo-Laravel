@@ -15,6 +15,8 @@
 
 	@include('backend._partials.styles')
 
+	@yield('page_styles')
+
 </head>
 
 <body>
