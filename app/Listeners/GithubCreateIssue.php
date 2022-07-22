@@ -35,7 +35,7 @@ class GithubCreateIssue implements ShouldQueue
 
         if (count($result) > 0 && array_key_exists('id', $result)) {
             $issue->uid = $result['id'];
-            $issue->uid = $result['number'];
+            $issue->number = $result['number'];
             $issue->reference_url = $result['html_url'];
             $issue->save();
         }

@@ -21,6 +21,9 @@
 		<a href="javascript:void(0);" data-uid="{{ $repository->uid }}" id="createBtn" class="btn btn-success btn-sm">
 			+ Add New Issue
 		</a>
+		<a href="{{ route('home') }}" class="btn btn-primary btn-sm pull-right">
+			< Back to Repository Listing
+		</a>
 	</div>
 
 	<table class="table table-striped table-bordered">
